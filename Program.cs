@@ -17,9 +17,9 @@ namespace HttpMux
             });
             // Route /index/test
             router.Post("/index/test", (HttpListenerContext ctx) => {
-                // byte[] body = new byte[]{};
-                // ctx.Request.InputStream.Read(body, 0, (int)ctx.Request.Length);
-                // Console.WriteLine(body);
+                byte[] body = new byte[]{};
+                ctx.Request.InputStream.Read(body, 0, (int)ctx.Request.Length);
+                Console.WriteLine(body);
             });
             // Route /home
             router.Get("/home", (HttpListenerContext ctx) => {

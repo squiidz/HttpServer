@@ -15,8 +15,8 @@ namespace Bone.Router
             public int TokenLength;
             public int VarPos;
             public Handler Handler;
-            
             public string variables;
+
             public Route(string method, string path, Handler handler)
             {
                 Method = method;
@@ -26,25 +26,30 @@ namespace Bone.Router
                 TokenLength = Tokens.Length;
                 variables = "";
                 VarPos = 0;
-                for (var i = 0; i < TokenLength; i++) {
-                    if (Tokens[i].Contains(":")) {
+                for (var i = 0; i < TokenLength; i++)
+                {
+                    if (Tokens[i].Contains(":"))
+                    {
                         VarPos = i;
                     }
                 }
-                Console.WriteLine(string.Format("{0} Route Saved.", Path));
+                // Console.WriteLine(string.Format("{0} Route Saved.", Path));
             }
-            public void Parse() {
+            public void Parse()
+            {
 
             }
         }
         public List<Route> Routes = new List<Route>();
         public Mux() { }
+
         public void Add(string method, string path, Handler handler)
         {
             var route = new Route(method, path, handler);
             route.Parse();
             Routes.Add(route);
         }
+
         public void Get(string path, Handler handler)
         {
             Add("GET", path, handler);
@@ -69,9 +74,11 @@ namespace Bone.Router
         {
             Add("PATCH", path, handler);
         }
-        public void Head(string path, Handler handler) {
+        public void Head(string path, Handler handler)
+        {
             Add("HEAD", path, handler);
         }
+
         public void HandleRoute(HttpListenerContext ctx)
         {
             var uri = ctx.Request.Url.LocalPath;
@@ -79,20 +86,25 @@ namespace Bone.Router
                 ctx.Request.HttpMethod,
                 ctx.Request.UserHostAddress,
                 ctx.Request.Url.LocalPath));
-                
+
             var uriTokens = uri.Split('/');
-            
+
             foreach (var r in Routes)
             {
                 if (r.TokenLength == uriTokens.Length && r.Method == ctx.Request.HttpMethod)
                 {
-                    if (r.VarPos != 0) {
+                    if (r.VarPos != 0)
+                    {
                         var id = Routes.IndexOf(r);
                         var sr = Routes[id];
                         sr.variables = uriTokens[r.VarPos];
                         ctx.Request.QueryString.Add(r.Tokens[r.VarPos], sr.variables);
+                        r.Handler(ctx);
                     }
-                    r.Handler(ctx);
+                    else if (r.Path == uri)
+                    {
+                        r.Handler(ctx);
+                    }
                 }
             }
         }

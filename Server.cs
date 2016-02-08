@@ -8,9 +8,9 @@ namespace Bone.HttpServer
     public class HttpServer
     {
         public Mux Mux = null;
-        string Host;
-        HttpListener Listener;
-        
+        public string Host;
+        private HttpListener Listener;
+
         public HttpServer(string host, Mux mux)
         {
             this.Mux = mux;
@@ -18,7 +18,8 @@ namespace Bone.HttpServer
             this.Listener = new HttpListener();
             Listener.Prefixes.Add(Host);
         }
-        public void Listen() {
+        public void Listen()
+        {
             Listener.Start();
             while (Listener.IsListening)
             {
