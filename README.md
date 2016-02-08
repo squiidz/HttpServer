@@ -1,0 +1,3 @@
+# HttpServer
+Small C# Web Server (Learning Project)
+DON'T USE IT ...
