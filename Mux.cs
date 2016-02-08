@@ -11,46 +11,66 @@ namespace Bone.Router
         {
             public string Method;
             public string Path;
+            public string[] Tokens;
+            public int TokenLength;
+            public int VarPos;
             public Handler Handler;
+            
+            public string variables;
             public Route(string method, string path, Handler handler)
             {
-                this.Method = method;
-                this.Path = path;
-                this.Handler = handler;
+                Method = method;
+                Path = path;
+                Handler = handler;
+                Tokens = Path.Split('/');
+                TokenLength = Tokens.Length;
+                variables = "";
+                VarPos = 0;
+                for (var i = 0; i < TokenLength; i++) {
+                    if (Tokens[i].Contains(":")) {
+                        VarPos = i;
+                    }
+                }
+                Console.WriteLine(string.Format("{0} Route Saved.", Path));
+            }
+            public void Parse() {
+
             }
         }
         public List<Route> Routes = new List<Route>();
         public Mux() { }
         public void Add(string method, string path, Handler handler)
         {
-            Routes.Add(new Route(method, path, handler));
+            var route = new Route(method, path, handler);
+            route.Parse();
+            Routes.Add(route);
         }
         public void Get(string path, Handler handler)
         {
-            Routes.Add(new Route("GET", path, handler));
+            Add("GET", path, handler);
         }
         public void Post(string path, Handler handler)
         {
-            Routes.Add(new Route("POST", path, handler));
+            Add("POST", path, handler);
         }
         public void Put(string path, Handler handler)
         {
-            Routes.Add(new Route("PUT", path, handler));
+            Add("PUT", path, handler);
         }
         public void Update(string path, Handler handler)
         {
-            Routes.Add(new Route("UPDATE", path, handler));
+            Add("UPDATE", path, handler);
         }
         public void Delete(string path, Handler handler)
         {
-            Routes.Add(new Route("DELETE", path, handler));
+            Add("DELETE", path, handler);
         }
         public void Patch(string path, Handler handler)
         {
-            Routes.Add(new Route("PATCH", path, handler));
+            Add("PATCH", path, handler);
         }
         public void Head(string path, Handler handler) {
-            Routes.Add(new Route("HEAD", path, handler));
+            Add("HEAD", path, handler);
         }
         public void HandleRoute(HttpListenerContext ctx)
         {
@@ -59,10 +79,19 @@ namespace Bone.Router
                 ctx.Request.HttpMethod,
                 ctx.Request.UserHostAddress,
                 ctx.Request.Url.LocalPath));
+                
+            var uriTokens = uri.Split('/');
+            
             foreach (var r in Routes)
             {
-                if (r.Path == uri && r.Method == ctx.Request.HttpMethod)
+                if (r.TokenLength == uriTokens.Length && r.Method == ctx.Request.HttpMethod)
                 {
+                    if (r.VarPos != 0) {
+                        var id = Routes.IndexOf(r);
+                        var sr = Routes[id];
+                        sr.variables = uriTokens[r.VarPos];
+                        ctx.Request.QueryString.Add(r.Tokens[r.VarPos], sr.variables);
+                    }
                     r.Handler(ctx);
                 }
             }

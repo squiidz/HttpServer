@@ -25,6 +25,9 @@ namespace HttpMux
             router.Get("/home", (HttpListenerContext ctx) => {
                 ResponseHandler.Write(ctx, "Hello from the other side");
             });
+            router.Get("/home/:var", (HttpListenerContext ctx) => {
+               ResponseHandler.Write(ctx, string.Format("You Send {0}", ctx.Request.QueryString.Get(":var"))); 
+            });
             // Start Bone.HttpServer()
             var server = new HttpServer("http://localhost:8080/", router);
             server.Listen();
