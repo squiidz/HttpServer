@@ -1,7 +1,7 @@
 {
   "version": "1.0.0-*",
-  "description": "TermC Console Application",
-  "authors": [ "" ],
+  "description": "Small HttpServer",
+  "authors": [ "squiidz" ],
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
@@ -11,14 +11,14 @@
   },
 
   "tooling": {
-    "defaultNamespace": "TermC"
+    "defaultNamespace": "HttpServer"
   },
 
   "dependencies": {
   },
 
   "commands": {
-    "TermC": "TermC"
+    "HttpServer": "HttpServer"
   },
 
   "frameworks": {
